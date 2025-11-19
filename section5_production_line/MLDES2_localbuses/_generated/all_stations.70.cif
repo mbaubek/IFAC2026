@@ -1,0 +1,21 @@
+plant automaton S_Pinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_drilldown:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+requirement invariant Station5Req5: A_drilldown.c_on needs S_Pinitialized.On;

@@ -1,0 +1,47 @@
+plant automaton S_pusher3_in:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_pusher3_out:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_pusher3:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton DDynamics3:
+  location:
+    initial;
+    marked;
+    edge S_pusher3_in.u_on when S_pusher3_out.Off;
+    edge S_pusher3_out.u_on when S_pusher3_in.Off;
+end
+supervisor automaton sup:
+  alphabet A_pusher3.c_off, A_pusher3.c_on;
+  location:
+    initial;
+    marked;
+    edge A_pusher3.c_off when true;
+    edge A_pusher3.c_on when true;
+end
+supervisor invariant Stations12Req33: A_pusher3.c_on needs S_pusher3_in.On;
+supervisor invariant Stations12Req36: A_pusher3.c_off needs S_pusher3_out.On;

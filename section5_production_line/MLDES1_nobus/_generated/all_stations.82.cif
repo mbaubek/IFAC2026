@@ -1,0 +1,22 @@
+plant automaton S_atexit:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_eject:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+requirement invariant Station5Req47: A_eject.c_on needs S_atexit.On;
+requirement invariant Station5Req48: A_eject.c_off needs S_atexit.Off;

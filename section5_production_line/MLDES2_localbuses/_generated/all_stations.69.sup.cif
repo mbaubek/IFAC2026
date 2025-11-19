@@ -1,0 +1,59 @@
+plant automaton S_drill_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_drill_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_turntable:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_clamp:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton PDynamics:
+  location:
+    initial;
+    marked;
+    edge S_drill_up.u_on when S_drill_down.Off;
+    edge S_drill_down.u_on when S_drill_up.Off;
+end
+supervisor automaton sup:
+  alphabet A_turntable.c_off, A_turntable.c_on, A_clamp.c_off, A_clamp.c_on;
+  location:
+    initial;
+    marked;
+    edge A_clamp.c_off when true;
+    edge A_clamp.c_on when true;
+    edge A_turntable.c_off when true;
+    edge A_turntable.c_on when true;
+end
+supervisor invariant Station5Req20: A_turntable.c_on needs S_drill_up.On;
+supervisor invariant Station5Req35: A_clamp.c_off needs S_drill_up.On;

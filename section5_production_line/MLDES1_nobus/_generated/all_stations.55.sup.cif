@@ -1,0 +1,100 @@
+plant automaton S_elevator_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_elevator_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton A_airslide:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton TDynamics:
+  location:
+    initial;
+    marked;
+    edge S_elevator_up.u_on when S_elevator_down.Off;
+    edge S_elevator_down.u_on when S_elevator_up.Off;
+end
+plant automaton S_atin:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_atend:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_conveyerB:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton BTimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    marked;
+    edge c_reset goto Off;
+end
+supervisor automaton sup:
+  alphabet A_airslide.c_off, A_airslide.c_on, A_conveyerB.c_off, A_conveyerB.c_on, BTimer.c_on, BTimer.c_reset;
+  location:
+    initial;
+    marked;
+    edge A_airslide.c_off when true;
+    edge A_airslide.c_on when true;
+    edge A_conveyerB.c_off when true;
+    edge A_conveyerB.c_on when true;
+    edge BTimer.c_on when true;
+    edge BTimer.c_reset when true;
+end
+supervisor invariant Req8: A_airslide.c_on needs S_atin.Off;
+supervisor invariant Stations34Req37: A_airslide.c_off needs S_elevator_down.On;
+supervisor invariant Stations34Req42: BTimer.c_on needs S_atend.On;
+supervisor invariant Stations34Req43: BTimer.c_reset needs S_atin.On or A_conveyerB.Off;
+supervisor invariant Stations34Req48: A_conveyerB.c_on needs S_atin.On;
+supervisor invariant Stations34Req49: A_conveyerB.c_off needs BTimer.Timeout;

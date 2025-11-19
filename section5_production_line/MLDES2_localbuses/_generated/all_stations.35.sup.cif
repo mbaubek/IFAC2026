@@ -1,0 +1,59 @@
+plant automaton S_opticalT:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_reflective:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_elevator_down:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+plant automaton TTimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    marked;
+    edge c_reset goto Off;
+end
+supervisor automaton sup:
+  alphabet A_elevator_down.c_off, A_elevator_down.c_on, TTimer.c_on, TTimer.c_reset;
+  location:
+    initial;
+    marked;
+    edge A_elevator_down.c_off when true;
+    edge A_elevator_down.c_on when true;
+    edge TTimer.c_on when true;
+    edge TTimer.c_reset when true;
+end
+supervisor invariant Stations34Req24: A_elevator_down.c_on needs TTimer.Timeout;
+supervisor invariant Stations34Req29: A_elevator_down.c_off needs TTimer.Timeout;
+supervisor invariant Stations34Req33: A_elevator_down.c_off needs S_reflective.Off;
+supervisor invariant Stations34Req34: A_elevator_down.c_on needs S_opticalT.Off;

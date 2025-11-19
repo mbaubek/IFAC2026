@@ -1,0 +1,22 @@
+controllable Ta_U;
+uncontrollable Ta_T;
+uncontrollable Ta_STf;
+controllable Ta_D;
+uncontrollable Ta_B;
+uncontrollable Ta_SBf;
+plant automaton Ta_V:
+  location l1:
+    initial;
+    marked;
+    edge Ta_U goto l2;
+  location l2:
+    edge Ta_T goto l3;
+  location l3:
+    edge Ta_STf goto l4;
+  location l4:
+    edge Ta_D goto l5;
+  location l5:
+    edge Ta_B goto l6;
+  location l6:
+    edge Ta_SBf goto l1;
+end

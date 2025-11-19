@@ -1,0 +1,61 @@
+plant automaton S_drill_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_drill_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_drilldown:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_drillup:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+plant automaton PDynamics:
+  location:
+    initial;
+    marked;
+    edge S_drill_up.u_on when S_drill_down.Off;
+    edge S_drill_down.u_on when S_drill_up.Off;
+end
+supervisor automaton sup:
+  alphabet A_drilldown.c_off, A_drilldown.c_on, A_drillup.c_off, A_drillup.c_on;
+  location:
+    initial;
+    marked;
+    edge A_drilldown.c_off when true;
+    edge A_drilldown.c_on when true;
+    edge A_drillup.c_off when true;
+    edge A_drillup.c_on when true;
+end
+supervisor invariant Station5Req40: A_drillup.c_off needs S_drill_up.On;
+supervisor invariant Station5Req41: A_drilldown.c_on needs S_drill_up.On;
+supervisor invariant Station5Req42: A_drillup.c_on needs S_drill_down.On;
+supervisor invariant Station5Req43: A_drilldown.c_off needs S_drill_down.On;

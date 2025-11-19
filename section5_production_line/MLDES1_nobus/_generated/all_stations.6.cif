@@ -1,0 +1,10 @@
+plant automaton S_stack1_filled:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end

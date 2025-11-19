@@ -1,0 +1,27 @@
+plant automaton S_Tinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton TTimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    marked;
+    edge c_reset goto Off;
+end
+requirement invariant Stations34Req9: TTimer.c_on needs S_Tinitialized.On;
+requirement invariant Stations34Req10: TTimer.c_reset needs S_Tinitialized.On;

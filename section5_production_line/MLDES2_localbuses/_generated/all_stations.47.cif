@@ -1,0 +1,22 @@
+plant automaton S_vacuum:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_transfer2droppos:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    marked;
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+requirement invariant Stations12Req82: A_transfer2droppos.c_on needs S_vacuum.On;

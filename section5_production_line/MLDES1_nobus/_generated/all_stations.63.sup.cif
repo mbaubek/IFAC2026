@@ -1,0 +1,214 @@
+plant automaton S_drill_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_drill_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_turntable:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_Pinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_drill:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_turntable:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_drilldown:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_drillup:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+plant automaton A_clamp:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_tester:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_eject:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton PTimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    edge c_reset goto Off;
+end
+plant automaton PDynamics:
+  location:
+    initial;
+    marked;
+    edge S_drill_up.u_on when S_drill_down.Off;
+    edge S_drill_down.u_on when S_drill_up.Off;
+end
+supervisor automaton Station5ReqTester:
+  location One:
+    initial;
+    marked;
+    edge A_turntable.c_on;
+    edge A_tester.c_on goto Two;
+  location Two:
+    edge A_tester.c_off goto Three;
+  location Three:
+    edge A_turntable.c_on goto One;
+end
+supervisor automaton Station5ReqClampDrill:
+  location One:
+    initial;
+    marked;
+    edge A_turntable.c_on;
+    edge A_clamp.c_on goto Two;
+  location Two:
+    edge A_drill.c_on goto Three;
+  location Three:
+    edge A_drillup.c_off goto Four;
+  location Four:
+    edge A_drilldown.c_on goto Five;
+  location Five:
+    edge A_drilldown.c_off goto Six;
+  location Six:
+    edge A_drillup.c_on goto Seven;
+  location Seven:
+    edge A_drill.c_off goto Eight;
+  location Eight:
+    edge A_clamp.c_off goto Nine;
+  location Nine:
+    edge A_turntable.c_on goto One;
+end
+supervisor automaton sup:
+  alphabet A_drill.c_off, A_drill.c_on, A_turntable.c_off, A_turntable.c_on, A_drilldown.c_off, A_drilldown.c_on, A_drillup.c_off, A_drillup.c_on, A_clamp.c_off, A_clamp.c_on, A_tester.c_off, A_tester.c_on, A_eject.c_off, A_eject.c_on, PTimer.c_on, PTimer.c_reset;
+  location:
+    initial;
+    marked;
+    edge A_clamp.c_off when true;
+    edge A_clamp.c_on when true;
+    edge A_drill.c_off when true;
+    edge A_drill.c_on when true;
+    edge A_drilldown.c_off when true;
+    edge A_drilldown.c_on when true;
+    edge A_drillup.c_off when true;
+    edge A_drillup.c_on when true;
+    edge A_eject.c_off when true;
+    edge A_eject.c_on when true;
+    edge A_tester.c_off when true;
+    edge A_tester.c_on when true;
+    edge A_turntable.c_off when true;
+    edge A_turntable.c_on when true;
+    edge PTimer.c_on when true;
+    edge PTimer.c_reset when true;
+end
+supervisor invariant Station5Req1: A_drill.c_on needs S_Pinitialized.On;
+supervisor invariant Station5Req2: A_drill.c_off needs S_Pinitialized.On;
+supervisor invariant Station5Req3: A_turntable.c_on needs S_Pinitialized.On;
+supervisor invariant Station5Req4: A_turntable.c_off needs S_Pinitialized.On;
+supervisor invariant Station5Req5: A_drilldown.c_on needs S_Pinitialized.On;
+supervisor invariant Station5Req6: A_drillup.c_off needs S_Pinitialized.On;
+supervisor invariant Station5Req7: A_clamp.c_on needs S_Pinitialized.On;
+supervisor invariant Station5Req8: A_clamp.c_off needs S_Pinitialized.On;
+supervisor invariant Station5Req11: A_eject.c_on needs S_Pinitialized.On;
+supervisor invariant Station5Req12: A_eject.c_off needs S_Pinitialized.On;
+supervisor invariant Station5Req17: A_turntable.c_on needs S_turntable.On;
+supervisor invariant Station5Req18: A_turntable.c_on needs PTimer.Timeout;
+supervisor invariant Station5Req19: A_turntable.c_off needs S_turntable.Off;
+supervisor invariant Station5Req20: A_turntable.c_on needs S_drill_up.On;
+supervisor invariant Station5Req22: A_turntable.c_on needs A_eject.Off;
+supervisor invariant Station5Req24: A_turntable.c_on needs A_tester.Off;
+supervisor invariant Station5Req27: A_tester.c_on needs A_turntable.Off;
+supervisor invariant Station5Req31: A_clamp.c_on needs S_turntable.On;
+supervisor invariant Station5Req32: A_clamp.c_on needs A_turntable.Off;
+supervisor invariant Station5Req33: A_clamp.c_on needs PTimer.Timeout;
+supervisor invariant Station5Req35: A_clamp.c_off needs S_drill_up.On;
+supervisor invariant Station5Req36: A_clamp.c_off needs A_drill.Off;
+supervisor invariant Station5Req37: A_drill.c_on needs S_drill_up.On;
+supervisor invariant Station5Req39: A_drill.c_off needs S_drill_up.On;
+supervisor invariant Station5Req44: A_eject.c_on needs S_turntable.On;
+supervisor invariant Station5Req45: A_eject.c_on needs A_turntable.Off;
+supervisor invariant Station5Req46: A_eject.c_on needs PTimer.Timeout;

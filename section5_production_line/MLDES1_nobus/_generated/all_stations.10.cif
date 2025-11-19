@@ -1,0 +1,27 @@
+plant automaton S_pusher2_in:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_pusher2_out:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton DDynamics2:
+  location:
+    initial;
+    marked;
+    edge S_pusher2_in.u_on when S_pusher2_out.Off;
+    edge S_pusher2_out.u_on when S_pusher2_in.Off;
+end

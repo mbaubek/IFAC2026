@@ -1,0 +1,23 @@
+plant automaton S_Hinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_transfer2droppos:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    marked;
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+requirement invariant Stations12Req56: A_transfer2droppos.c_on needs S_Hinitialized.On;
+requirement invariant Stations12Req57: A_transfer2droppos.c_off needs S_Hinitialized.On;

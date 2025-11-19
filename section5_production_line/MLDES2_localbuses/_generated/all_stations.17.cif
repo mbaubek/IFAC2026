@@ -1,0 +1,10 @@
+plant automaton A_x2testing:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end

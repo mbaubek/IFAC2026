@@ -1,0 +1,197 @@
+//////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2018, 2025 Contributors to the Eclipse Foundation
+//
+// See the NOTICE file(s) distributed with this work for additional
+// information regarding copyright ownership.
+//
+// This program and the accompanying materials are made available
+// under the terms of the MIT License which is available at
+// https://opensource.org/licenses/MIT
+//
+// SPDX-License-Identifier: MIT
+//////////////////////////////////////////////////////////////////////////////
+
+import "definitions.cif";
+
+// PROCESSING
+
+// Plant:
+// Sensors
+S_atinput      : TwoStateSensor(false);
+S_attest       : TwoStateSensor(false);
+S_atdrill      : TwoStateSensor(false);
+S_atexit       : TwoStateSensor(false);
+S_clamp        : TwoStateSensor(false);
+S_test_ok      : TwoStateSensor(false);
+S_drill_up     : TwoStateSensor(true);
+S_drill_down   : TwoStateSensor(false);
+S_turntable    : TwoStateSensor(true);
+S_Pinitialized : TwoStateSensor(false);
+
+// Actuators
+A_drill     : TwoStateActuator(false);
+A_turntable : TwoStateActuator(false);
+A_drilldown : TwoStateActuator(false);
+A_drillup   : TwoStateActuator(true);
+A_clamp     : TwoStateActuator(false);
+A_tester    : TwoStateActuator(false);
+A_eject     : TwoStateActuator(false);
+
+plant PTimer:
+  controllable c_on, c_reset; uncontrollable u_timeout;
+  location Off:
+    initial; marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    edge c_reset goto Off;
+end
+
+// Dynamics
+// Drill dynamics, sensors are mutually exclusive.
+plant PDynamics:
+    location: initial; marked;
+        edge S_drill_up.u_on   when S_drill_down.Off;
+        edge S_drill_down.u_on when S_drill_up.Off;
+end
+
+// Requirements
+// Initialization
+// The actuators can only activate when the station is initialized.
+requirement Station5Req1: A_drill.c_on needs S_Pinitialized.On;
+requirement Station5Req2: A_drill.c_off needs S_Pinitialized.On;
+requirement Station5Req3: A_turntable.c_on needs S_Pinitialized.On;
+requirement Station5Req4: A_turntable.c_off needs S_Pinitialized.On;
+requirement Station5Req5: A_drilldown.c_on needs S_Pinitialized.On;
+requirement Station5Req6: A_drillup.c_off  needs S_Pinitialized.On;
+requirement Station5Req7: A_clamp.c_on needs S_Pinitialized.On;
+requirement Station5Req8: A_clamp.c_off needs S_Pinitialized.On;
+requirement Station5Req9: A_tester.c_on needs S_Pinitialized.On;
+requirement Station5Req10: A_tester.c_off needs S_Pinitialized.On;
+requirement Station5Req11: A_eject.c_on needs S_Pinitialized.On;
+requirement Station5Req12: A_eject.c_off needs S_Pinitialized.On;
+requirement Station5Req13: PTimer.c_on needs S_Pinitialized.On;
+requirement Station5Req14: PTimer.c_reset needs S_Pinitialized.On;
+
+// A timer that makes sure that the turntable is at stand-still for x seconds, such that sensor measurements can be
+// performed.
+requirement Station5Req15: PTimer.c_on    needs S_turntable.On;
+requirement Station5Req16: PTimer.c_reset needs S_turntable.Off;
+
+// Turn table
+// The turn table is only allowed to enable at a valid positions.
+requirement Station5Req17: A_turntable.c_on  needs S_turntable.On;
+requirement Station5Req18: A_turntable.c_on needs PTimer.Timeout;
+
+// The turntable actuator can be disabled when the turntable leaves the valid position.
+requirement Station5Req19: A_turntable.c_off needs S_turntable.Off;
+
+// The turntable can only rotate when the other actuators are in a safe position.
+requirement Station5Req20: A_turntable.c_on  needs S_drill_up.On;
+requirement Station5Req21: A_turntable.c_on  needs S_clamp.Off;
+requirement Station5Req22: A_turntable.c_on  needs A_eject.Off;
+requirement Station5Req23: A_turntable.c_on  needs A_drill.Off;
+requirement Station5Req24: A_turntable.c_on  needs A_tester.Off;
+
+// The turntable can only rotate when a new product has entered.
+requirement Station5Req25:A_turntable.c_on  needs S_atinput.On;
+
+// Tester
+// The tester is only allowed to enable when the turntable is at standstill.
+requirement Station5Req26: A_tester.c_on  needs S_turntable.On;
+requirement Station5Req27: A_tester.c_on  needs A_turntable.Off;
+requirement Station5Req28: A_tester.c_on  needs PTimer.Timeout;
+
+// The tester is only allowed to enable when there is a product.
+requirement Station5Req29: A_tester.c_on  needs S_attest.On;
+
+// The tester can be disabled once the measurement is completed.
+requirement Station5Req30: A_tester.c_off needs S_test_ok.On;
+
+// If there is a product at the testing location, it should be processed, before the turntable is activated again.
+requirement Station5ReqTester:
+  location One:
+    initial; marked;
+    edge A_turntable.c_on;
+    edge A_tester.c_on goto Two;
+  location Two:
+    edge A_tester.c_off goto Three;
+  location Three:
+    edge A_turntable.c_on goto One;
+end
+
+
+// Clamp
+// The clamp is only allowed to enable when the turn table is at standstill.
+requirement Station5Req31: A_clamp.c_on  needs S_turntable.On;
+requirement Station5Req32: A_clamp.c_on  needs A_turntable.Off;
+requirement Station5Req33: A_clamp.c_on  needs PTimer.Timeout;
+
+// The clamp is only allowed to enable when a product is available.
+requirement Station5Req34: A_clamp.c_on  needs S_atdrill.On;
+
+// The clamp can only be released when the drill is up.
+requirement Station5Req35: A_clamp.c_off needs S_drill_up.On;
+
+// The clamp can only be released when the drill is disabled.
+requirement Station5Req36: A_clamp.c_off needs A_drill.Off;
+
+
+// Drill
+// The drill is only allowed to enable at the upper position.
+requirement Station5Req37: A_drill.c_on  needs S_drill_up.On;
+
+// The drill is only allowed to activate when there is a clamped product.
+requirement Station5Req38: A_drill.c_on  needs S_clamp.On;
+
+// The drill is only allowed to disable at the upper position.
+requirement Station5Req39: A_drill.c_off needs S_drill_up.On;
+
+
+// Drill movement
+// The drill is only allowed to descend when it is fully ascended.
+requirement Station5Req40: A_drillup.c_off needs S_drill_up.On;
+requirement Station5Req41: A_drilldown.c_on needs S_drill_up.On;
+
+// The drill is only allowed to ascend  when it is fully descended.
+requirement Station5Req42: A_drillup.c_on needs S_drill_down.On;
+requirement Station5Req43: A_drilldown.c_off needs S_drill_down.On;
+
+// The cycle at the drilling location should be as follows:
+// Clamp product, activate drill, descend, ascend, deactivate drill, release product.
+requirement Station5ReqClampDrill:
+  location One:
+    initial; marked;
+    edge A_turntable.c_on;
+    edge A_clamp.c_on goto Two;
+  location Two:
+    edge A_drill.c_on goto Three;
+  location Three:
+    edge A_drillup.c_off goto Four;
+  location Four:
+    edge A_drilldown.c_on goto Five;
+  location Five:
+    edge A_drilldown.c_off goto Six;
+  location Six:
+    edge A_drillup.c_on goto Seven;
+  location Seven:
+    edge A_drill.c_off goto Eight;
+  location Eight:
+    edge A_clamp.c_off goto Nine;
+  location Nine:
+    edge A_turntable.c_on goto One;
+end
+
+// Eject
+// The ejector are only allowed to enable when the turntable is at stand-still.
+requirement Station5Req44: A_eject.c_on needs S_turntable.On;
+requirement Station5Req45: A_eject.c_on needs A_turntable.Off;
+requirement Station5Req46: A_eject.c_on needs PTimer.Timeout;
+
+// The ejector is only allowed to enable when there is a product.
+requirement Station5Req47: A_eject.c_on  needs S_atexit.On;
+
+// The ejector can be retracted if the product is removed.
+requirement Station5Req48: A_eject.c_off needs S_atexit.Off;

@@ -1,0 +1,50 @@
+plant automaton S_transfer_atpickup:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_transfer_atdrop:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_transfer_athalfway:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton A_vacuum:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton HDynamics2:
+  location:
+    initial;
+    marked;
+    edge S_transfer_atpickup.u_on when S_transfer_atdrop.Off and S_transfer_athalfway.Off;
+    edge S_transfer_atdrop.u_on when S_transfer_atpickup.Off and S_transfer_athalfway.Off;
+    edge S_transfer_athalfway.u_on when S_transfer_atdrop.Off and S_transfer_atpickup.Off;
+end
+requirement invariant Stations12Req85: A_vacuum.c_on needs S_transfer_atpickup.On;
+requirement invariant Stations12Req86: A_vacuum.c_off needs S_transfer_atdrop.On;

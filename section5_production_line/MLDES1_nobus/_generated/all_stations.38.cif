@@ -1,0 +1,46 @@
+plant automaton S_opticalT:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_reflective:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_elevator_up:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_elevator_down:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+requirement invariant Stations34Req16: A_elevator_down.c_on needs A_elevator_up.Off;
+requirement invariant Stations34Req17: A_elevator_up.c_on needs A_elevator_down.Off;
+requirement invariant Stations34Req32: A_elevator_up.c_on needs S_reflective.Off;
+requirement invariant Stations34Req33: A_elevator_down.c_off needs S_reflective.Off;
+requirement invariant Stations34Req34: A_elevator_down.c_on needs S_opticalT.Off;
+requirement invariant Stations34Req35: A_elevator_up.c_off needs S_opticalT.Off;

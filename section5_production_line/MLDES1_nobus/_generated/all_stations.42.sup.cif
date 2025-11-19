@@ -1,0 +1,18 @@
+plant automaton A_elevator_down:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+supervisor automaton sup:
+  alphabet A_elevator_down.c_off, A_elevator_down.c_on;
+  location:
+    initial;
+    marked;
+    edge A_elevator_down.c_off when true;
+    edge A_elevator_down.c_on when true;
+end

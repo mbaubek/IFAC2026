@@ -1,0 +1,27 @@
+plant automaton S_separator_opened:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_separator_closed:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton BDynamics:
+  location:
+    initial;
+    marked;
+    edge S_separator_opened.u_on when S_separator_closed.Off;
+    edge S_separator_closed.u_on when S_separator_opened.Off;
+end

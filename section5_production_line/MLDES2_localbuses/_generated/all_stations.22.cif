@@ -1,0 +1,39 @@
+plant automaton S_pusher2_in:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_pusher2_out:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_pusher2:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton DDynamics2:
+  location:
+    initial;
+    marked;
+    edge S_pusher2_in.u_on when S_pusher2_out.Off;
+    edge S_pusher2_out.u_on when S_pusher2_in.Off;
+end
+requirement invariant Stations12Req32: A_pusher2.c_on needs S_pusher2_in.On;
+requirement invariant Stations12Req35: A_pusher2.c_off needs S_pusher2_out.On;

@@ -1,0 +1,117 @@
+plant automaton S_clamp:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_drill_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_drill_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_drill:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_turntable:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_drilldown:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_drillup:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+plant automaton A_clamp:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton PDynamics:
+  location:
+    initial;
+    marked;
+    edge S_drill_up.u_on when S_drill_down.Off;
+    edge S_drill_down.u_on when S_drill_up.Off;
+end
+requirement automaton Station5ReqClampDrill:
+  location One:
+    initial;
+    marked;
+    edge A_turntable.c_on;
+    edge A_clamp.c_on goto Two;
+  location Two:
+    edge A_drill.c_on goto Three;
+  location Three:
+    edge A_drillup.c_off goto Four;
+  location Four:
+    edge A_drilldown.c_on goto Five;
+  location Five:
+    edge A_drilldown.c_off goto Six;
+  location Six:
+    edge A_drillup.c_on goto Seven;
+  location Seven:
+    edge A_drill.c_off goto Eight;
+  location Eight:
+    edge A_clamp.c_off goto Nine;
+  location Nine:
+    edge A_turntable.c_on goto One;
+end
+requirement invariant Station5Req37: A_drill.c_on needs S_drill_up.On;
+requirement invariant Station5Req38: A_drill.c_on needs S_clamp.On;
+requirement invariant Station5Req39: A_drill.c_off needs S_drill_up.On;
+requirement invariant Station5Req40: A_drillup.c_off needs S_drill_up.On;
+requirement invariant Station5Req41: A_drilldown.c_on needs S_drill_up.On;
+requirement invariant Station5Req42: A_drillup.c_on needs S_drill_down.On;
+requirement invariant Station5Req43: A_drilldown.c_off needs S_drill_down.On;

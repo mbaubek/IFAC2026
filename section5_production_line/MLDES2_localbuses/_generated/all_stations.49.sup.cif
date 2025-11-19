@@ -1,0 +1,34 @@
+plant automaton A_transfer2pickpos:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    marked;
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_transfer2droppos:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    marked;
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+supervisor automaton sup:
+  alphabet A_transfer2pickpos.c_off, A_transfer2pickpos.c_on, A_transfer2droppos.c_off, A_transfer2droppos.c_on;
+  location:
+    initial;
+    marked;
+    edge A_transfer2droppos.c_off when true;
+    edge A_transfer2droppos.c_on when true;
+    edge A_transfer2pickpos.c_off when true;
+    edge A_transfer2pickpos.c_on when true;
+end
+supervisor invariant Stations12Req79: A_transfer2pickpos.c_on needs A_transfer2droppos.Off;
+supervisor invariant Stations12Req80: A_transfer2droppos.c_on needs A_transfer2pickpos.Off;

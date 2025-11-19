@@ -1,0 +1,34 @@
+plant automaton S_Pinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_turntable:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_eject:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+requirement invariant Station5Req11: A_eject.c_on needs S_Pinitialized.On;
+requirement invariant Station5Req12: A_eject.c_off needs S_Pinitialized.On;
+requirement invariant Station5Req22: A_turntable.c_on needs A_eject.Off;
+requirement invariant Station5Req45: A_eject.c_on needs A_turntable.Off;

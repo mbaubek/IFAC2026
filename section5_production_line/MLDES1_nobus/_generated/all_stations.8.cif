@@ -1,0 +1,74 @@
+plant automaton S_product2:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_pusher2_in:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_pusher2_out:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_stack2_filled:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_Dinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_pusher2:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton DDynamics2:
+  location:
+    initial;
+    marked;
+    edge S_pusher2_in.u_on when S_pusher2_out.Off;
+    edge S_pusher2_out.u_on when S_pusher2_in.Off;
+end
+requirement invariant Stations12Req27: A_pusher2.c_on needs S_Dinitialized.On;
+requirement invariant Stations12Req28: A_pusher2.c_off needs S_Dinitialized.On;
+requirement invariant Stations12Req32: A_pusher2.c_on needs S_pusher2_in.On;
+requirement invariant Stations12Req35: A_pusher2.c_off needs S_pusher2_out.On;
+requirement invariant Stations12Req38: A_pusher2.c_on needs S_product2.Off;
+requirement invariant Stations12Req41: A_pusher2.c_off needs S_stack2_filled.On;
+requirement invariant Stations12Req44: A_pusher2.c_off needs S_product2.Off;

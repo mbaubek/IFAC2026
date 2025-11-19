@@ -1,0 +1,98 @@
+plant automaton S_inductive:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_optical:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_slidefull:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_Sinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_gate1:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_gate2:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_stopperretract:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton STimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    edge c_reset goto Off;
+end
+requirement invariant Station6Req3: A_gate1.c_on needs S_Sinitialized.On;
+requirement invariant Station6Req4: A_gate1.c_off needs S_Sinitialized.On;
+requirement invariant Station6Req5: A_gate2.c_on needs S_Sinitialized.On;
+requirement invariant Station6Req6: A_gate2.c_off needs S_Sinitialized.On;
+requirement invariant Station6Req20: A_gate1.c_on needs S_optical.On;
+requirement invariant Station6Req21: A_gate1.c_on needs S_inductive.Off;
+requirement invariant Station6Req22: A_gate1.c_on needs STimer.Timeout;
+requirement invariant Station6Req23: A_gate1.c_off needs S_slidefull.On;
+requirement invariant Station6Req26: A_gate2.c_on needs STimer.Timeout;
+requirement invariant Station6Req27: A_gate2.c_off needs S_slidefull.On;
+requirement invariant Station6Req28: A_gate1.c_on needs A_stopperretract.Off;
+requirement invariant Station6Req29: A_gate1.c_off needs A_stopperretract.Off;
+requirement invariant Station6Req30: A_gate2.c_on needs A_stopperretract.Off;
+requirement invariant Station6Req31: A_gate2.c_off needs A_stopperretract.Off;

@@ -1,0 +1,30 @@
+controllable Ro_L;
+controllable Ro_R;
+uncontrollable Ro_35;
+uncontrollable Ro_S35;
+uncontrollable Ro_m90;
+uncontrollable Ro_Sm90;
+uncontrollable Ro_50;
+uncontrollable Ro_S50;
+plant automaton Ro:
+  location l1:
+    initial;
+    marked;
+    edge Ro_L goto l2;
+  location l2:
+    edge Ro_35 goto l3;
+  location l3:
+    edge Ro_S35 goto l4;
+  location l4:
+    edge Ro_L goto l5;
+  location l5:
+    edge Ro_m90 goto l6;
+  location l6:
+    edge Ro_Sm90 goto l7;
+  location l7:
+    edge Ro_R goto l8;
+  location l8:
+    edge Ro_50 goto l9;
+  location l9:
+    edge Ro_S50 goto l1;
+end

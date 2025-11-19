@@ -1,0 +1,33 @@
+plant automaton S_drill_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_drill_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton PDynamics:
+  location:
+    initial;
+    marked;
+    edge S_drill_up.u_on when S_drill_down.Off;
+    edge S_drill_down.u_on when S_drill_up.Off;
+end
+supervisor automaton sup:
+  alphabet;
+  location:
+    initial;
+    marked;
+end

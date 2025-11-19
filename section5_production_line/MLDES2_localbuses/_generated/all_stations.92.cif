@@ -1,0 +1,39 @@
+plant automaton S_gate2_opened:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_gate2_closed:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_gate2:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton SDynamics2:
+  location:
+    initial;
+    marked;
+    edge S_gate2_opened.u_on when S_gate2_closed.Off;
+    edge S_gate2_closed.u_on when S_gate2_opened.Off;
+end
+requirement invariant Station6Req17: A_gate2.c_on needs S_gate2_opened.On;
+requirement invariant Station6Req19: A_gate2.c_off needs S_gate2_closed.On;

@@ -1,0 +1,75 @@
+plant automaton S_product:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_slidefull:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_Sinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_conveyer:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_stopperretract:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton STimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    edge c_reset goto Off;
+end
+requirement invariant Station6Req1: A_conveyer.c_on needs S_Sinitialized.On;
+requirement invariant Station6Req2: A_conveyer.c_off needs S_Sinitialized.On;
+requirement invariant Station6Req7: A_stopperretract.c_on needs S_Sinitialized.On;
+requirement invariant Station6Req8: A_stopperretract.c_off needs S_Sinitialized.On;
+requirement invariant Station6Req9: STimer.c_on needs S_product.On;
+requirement invariant Station6Req10: STimer.c_reset needs S_slidefull.On;
+requirement invariant Station6Req11: A_conveyer.c_on needs S_product.On;
+requirement invariant Station6Req12: A_conveyer.c_off needs S_slidefull.On;
+requirement invariant Station6Req13: A_stopperretract.c_on needs STimer.Timeout;
+requirement invariant Station6Req14: A_stopperretract.c_on needs S_slidefull.Off;
+requirement invariant Station6Req15: A_stopperretract.c_off needs S_slidefull.On;

@@ -1,0 +1,157 @@
+controllable Ro_L;
+controllable Ro_R;
+uncontrollable Ro_35;
+uncontrollable Ro_S35;
+uncontrollable Ro_m90;
+uncontrollable Ro_Sm90;
+uncontrollable Ro_50;
+uncontrollable Ro_S50;
+controllable A1_mOn;
+controllable A1_mOff;
+controllable A1_B;
+controllable A1_F;
+uncontrollable A1_37;
+uncontrollable A1_S37;
+uncontrollable A1_65;
+uncontrollable A1_S65;
+uncontrollable A1_52;
+uncontrollable A1_S52;
+controllable A2_mOn;
+controllable A2_mOff;
+controllable A2_B;
+controllable A2_F;
+uncontrollable A2_0;
+uncontrollable A2_S0;
+uncontrollable A2_80;
+uncontrollable A2_S80;
+uncontrollable A2_57;
+uncontrollable A2_S57;
+plant automaton Ro:
+  location l1:
+    initial;
+    marked;
+    edge Ro_L goto l2;
+  location l2:
+    edge Ro_35 goto l3;
+  location l3:
+    edge Ro_S35 goto l4;
+  location l4:
+    edge Ro_L goto l5;
+  location l5:
+    edge Ro_m90 goto l6;
+  location l6:
+    edge Ro_Sm90 goto l7;
+  location l7:
+    edge Ro_R goto l8;
+  location l8:
+    edge Ro_50 goto l9;
+  location l9:
+    edge Ro_S50 goto l1;
+end
+plant automaton A1:
+  location l1:
+    initial;
+    marked;
+    edge A1_mOn goto l2;
+  location l2:
+    edge A1_B goto l3;
+    edge A1_F goto l7;
+  location l3:
+    edge A1_37 goto l4;
+  location l4:
+    edge A1_S37 goto l5;
+  location l5:
+    edge A1_F goto l6;
+  location l6:
+    edge A1_65 goto l7;
+  location l7:
+    edge A1_S65 goto l8;
+  location l8:
+    edge A1_mOff goto l9;
+  location l9:
+    edge A1_B goto l10;
+  location l10:
+    edge A1_52 goto l11;
+  location l11:
+    edge A1_S52 goto l1;
+end
+plant automaton A2:
+  location l1:
+    initial;
+    marked;
+    edge A2_F goto l2;
+  location l2:
+    edge A2_80 goto l3;
+  location l3:
+    edge A2_S80 goto l4;
+  location l4:
+    edge A2_mOn goto l5;
+  location l5:
+    edge A2_B goto l6;
+  location l6:
+    edge A2_57 goto l7;
+  location l7:
+    edge A2_S57 goto l8;
+  location l8:
+    edge A2_mOff goto l9;
+  location l9:
+    edge A2_B goto l10;
+    edge A2_F goto l3;
+  location l10:
+    edge A2_0 goto l11;
+  location l11:
+    edge A2_S0 goto l1;
+end
+supervisor automaton R2:
+  location l1:
+    initial;
+    edge Ro_S35 goto l2;
+  location l2:
+    marked;
+    edge Ro_S35 goto l3;
+  location l3:
+    edge A2_mOn goto l2;
+end
+supervisor automaton R3:
+  location l1:
+    initial;
+    edge A1_mOn goto l2;
+  location l2:
+    edge Ro_L goto l3;
+  location l3:
+    edge Ro_L goto l4;
+  location l4:
+    marked;
+    edge A1_mOn, A2_mOn goto l5;
+  location l5:
+    edge Ro_L goto l4;
+end
+supervisor automaton R5:
+  location l1:
+    initial;
+    edge Ro_Sm90;
+    edge Ro_R goto l2;
+  location l2:
+    marked;
+    edge Ro_Sm90 goto l3;
+  location l3:
+    edge A2_mOff goto l4;
+  location l4:
+    edge Ro_R goto l2;
+end
+supervisor automaton sup:
+  alphabet Ro_L, Ro_R, A1_mOn, A1_B, A1_F, A1_mOff, A2_F, A2_mOn, A2_B, A2_mOff;
+  location:
+    initial;
+    marked;
+    edge A1_B when true;
+    edge A1_F when true;
+    edge A1_mOff when true;
+    edge A1_mOn when (not R3.l2 and not R3.l4 or not Ro.l5 or (R5.l1 or (R5.l3 or R2.l2))) and ((not R3.l2 and not R3.l4 or not Ro.l7 or (not R5.l3 or R2.l2)) and (not R3.l2 and not R3.l4 or not Ro.l6 or (R5.l1 or (R5.l3 or R2.l2))));
+    edge A2_B when true;
+    edge A2_F when true;
+    edge A2_mOff when true;
+    edge A2_mOn when true;
+    edge Ro_L when true;
+    edge Ro_R when true;
+end

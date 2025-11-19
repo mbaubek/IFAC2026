@@ -1,0 +1,196 @@
+plant automaton S_product4:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_xpos_at1:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_xpos_at2:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_xpos_at3:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_xpos_atdrop:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_gripper:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_transfer_atpickup:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_transfer_atdrop:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_transfer_athalfway:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_Hinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_x2distributing:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+plant automaton A_x2testing:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    initial;
+    marked;
+    edge c_off goto Off;
+  location Off:
+    edge c_on goto On;
+end
+plant automaton A_zdown:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_gripperclose:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton A_transfer2pickpos:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    marked;
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton HDynamics1:
+  location:
+    initial;
+    marked;
+    edge S_xpos_at1.u_on when S_xpos_at2.Off and S_xpos_at3.Off and S_xpos_atdrop.Off;
+    edge S_xpos_at2.u_on when S_xpos_at1.Off and S_xpos_at3.Off and S_xpos_atdrop.Off;
+    edge S_xpos_at3.u_on when S_xpos_at1.Off and S_xpos_at2.Off and S_xpos_atdrop.Off;
+    edge S_xpos_atdrop.u_on when S_xpos_at1.Off and S_xpos_at2.Off and S_xpos_at3.Off;
+end
+plant automaton HDynamics2:
+  location:
+    initial;
+    marked;
+    edge S_transfer_atpickup.u_on when S_transfer_atdrop.Off and S_transfer_athalfway.Off;
+    edge S_transfer_atdrop.u_on when S_transfer_atpickup.Off and S_transfer_athalfway.Off;
+    edge S_transfer_athalfway.u_on when S_transfer_atdrop.Off and S_transfer_atpickup.Off;
+end
+supervisor automaton sup:
+  alphabet A_x2distributing.c_off, A_x2distributing.c_on, A_x2testing.c_off, A_x2testing.c_on, A_zdown.c_off, A_zdown.c_on, A_gripperclose.c_off, A_gripperclose.c_on, A_transfer2pickpos.c_off, A_transfer2pickpos.c_on;
+  location:
+    initial;
+    marked;
+    edge A_gripperclose.c_off when true;
+    edge A_gripperclose.c_on when true;
+    edge A_transfer2pickpos.c_off when true;
+    edge A_transfer2pickpos.c_on when true;
+    edge A_x2distributing.c_off when true;
+    edge A_x2distributing.c_on when true;
+    edge A_x2testing.c_off when true;
+    edge A_x2testing.c_on when true;
+    edge A_zdown.c_off when true;
+    edge A_zdown.c_on when true;
+end
+supervisor invariant Stations12Req46: A_x2distributing.c_on needs S_Hinitialized.On;
+supervisor invariant Stations12Req47: A_x2distributing.c_off needs S_Hinitialized.On;
+supervisor invariant Stations12Req48: A_x2testing.c_on needs S_Hinitialized.On;
+supervisor invariant Stations12Req49: A_x2testing.c_off needs S_Hinitialized.On;
+supervisor invariant Stations12Req50: A_zdown.c_on needs S_Hinitialized.On;
+supervisor invariant Stations12Req51: A_zdown.c_off needs S_Hinitialized.On;
+supervisor invariant Stations12Req52: A_gripperclose.c_on needs S_Hinitialized.On;
+supervisor invariant Stations12Req53: A_gripperclose.c_off needs S_Hinitialized.On;
+supervisor invariant Stations12Req77: A_x2distributing.c_off needs S_xpos_at1.On and S_gripper.On or S_xpos_at2.On and S_gripper.On or S_xpos_at3.On and S_gripper.On and S_product4.Off and S_transfer_athalfway.On;
+supervisor invariant Stations12Req78: A_x2distributing.c_on needs S_xpos_at3.On and S_transfer_athalfway.Off or S_xpos_at3.On and S_product4.On or S_xpos_atdrop.On;
+supervisor invariant Stations12Req83: A_transfer2pickpos.c_on needs S_transfer_atdrop.On or S_transfer_athalfway.On and S_product4.On and S_xpos_at3.On;
+supervisor invariant Stations12Req84: A_transfer2pickpos.c_off needs S_transfer_atpickup.On or S_transfer_athalfway.On and not S_product4.On;

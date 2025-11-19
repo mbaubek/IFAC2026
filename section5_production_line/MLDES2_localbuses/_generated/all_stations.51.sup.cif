@@ -1,0 +1,18 @@
+plant automaton A_ejectpulse:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+supervisor automaton sup:
+  alphabet A_ejectpulse.c_off, A_ejectpulse.c_on;
+  location:
+    initial;
+    marked;
+    edge A_ejectpulse.c_off when true;
+    edge A_ejectpulse.c_on when true;
+end

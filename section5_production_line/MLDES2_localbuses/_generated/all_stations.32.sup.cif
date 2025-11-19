@@ -1,0 +1,33 @@
+plant automaton S_elevator_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_elevator_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton TDynamics:
+  location:
+    initial;
+    marked;
+    edge S_elevator_up.u_on when S_elevator_down.Off;
+    edge S_elevator_down.u_on when S_elevator_up.Off;
+end
+supervisor automaton sup:
+  alphabet;
+  location:
+    initial;
+    marked;
+end

@@ -1,0 +1,69 @@
+plant automaton S_elevator_up:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_elevator_down:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    initial;
+    marked;
+    edge u_off goto Off;
+  location Off:
+    edge u_on goto On;
+end
+plant automaton S_pusher:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton S_Tinitialized:
+  uncontrollable u_on;
+  uncontrollable u_off;
+  location On:
+    edge u_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge u_on goto On;
+end
+plant automaton A_airslide:
+  controllable c_on;
+  controllable c_off;
+  location On:
+    edge c_off goto Off;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto On;
+end
+plant automaton TDynamics:
+  location:
+    initial;
+    marked;
+    edge S_elevator_up.u_on when S_elevator_down.Off;
+    edge S_elevator_down.u_on when S_elevator_up.Off;
+end
+supervisor automaton sup:
+  alphabet A_airslide.c_off, A_airslide.c_on;
+  location:
+    initial;
+    marked;
+    edge A_airslide.c_off when true;
+    edge A_airslide.c_on when true;
+end
+supervisor invariant Stations34Req7: A_airslide.c_on needs S_Tinitialized.On;
+supervisor invariant Stations34Req8: A_airslide.c_off needs S_Tinitialized.On;
+supervisor invariant Stations34Req36: A_airslide.c_on needs S_elevator_up.On and S_pusher.On;
+supervisor invariant Stations34Req37: A_airslide.c_off needs S_elevator_down.On;

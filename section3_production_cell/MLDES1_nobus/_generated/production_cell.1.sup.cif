@@ -1,0 +1,30 @@
+controllable Ta_R;
+uncontrollable Ta_50;
+uncontrollable Ta_S50f;
+controllable Ta_L;
+uncontrollable Ta_0;
+uncontrollable Ta_S0f;
+plant automaton Ta_H:
+  location l1:
+    initial;
+    marked;
+    edge Ta_R goto l2;
+  location l2:
+    edge Ta_50 goto l3;
+  location l3:
+    edge Ta_S50f goto l4;
+  location l4:
+    edge Ta_L goto l5;
+  location l5:
+    edge Ta_0 goto l6;
+  location l6:
+    edge Ta_S0f goto l1;
+end
+supervisor automaton sup:
+  alphabet Ta_R, Ta_L;
+  location:
+    initial;
+    marked;
+    edge Ta_L when true;
+    edge Ta_R when true;
+end

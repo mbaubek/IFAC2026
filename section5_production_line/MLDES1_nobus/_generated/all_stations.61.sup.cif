@@ -1,0 +1,23 @@
+plant automaton BTimer:
+  controllable c_on;
+  controllable c_reset;
+  uncontrollable u_timeout;
+  location Off:
+    initial;
+    marked;
+    edge c_on goto Running;
+  location Running:
+    edge u_timeout goto Timeout;
+    edge c_reset goto Off;
+  location Timeout:
+    marked;
+    edge c_reset goto Off;
+end
+supervisor automaton sup:
+  alphabet BTimer.c_on, BTimer.c_reset;
+  location:
+    initial;
+    marked;
+    edge BTimer.c_on when true;
+    edge BTimer.c_reset when true;
+end

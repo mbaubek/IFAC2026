@@ -1,0 +1,94 @@
+controllable Pr_UB;
+uncontrollable Pr_MU;
+uncontrollable Pr_SMf;
+controllable Pr_UM;
+uncontrollable Pr_T;
+uncontrollable Pr_STf;
+controllable Pr_D;
+uncontrollable Pr_MD;
+uncontrollable Pr_B;
+uncontrollable Pr_SBf;
+controllable A2_mOn;
+controllable A2_mOff;
+controllable A2_B;
+controllable A2_F;
+uncontrollable A2_0;
+uncontrollable A2_S0;
+uncontrollable A2_80;
+uncontrollable A2_S80;
+uncontrollable A2_57;
+uncontrollable A2_S57;
+plant automaton Pr:
+  location l1:
+    initial;
+    marked;
+    edge Pr_UB goto l2;
+  location l2:
+    edge Pr_MU goto l3;
+  location l3:
+    edge Pr_SMf goto l4;
+  location l4:
+    edge Pr_UM goto l5;
+  location l5:
+    edge Pr_T goto l6;
+  location l6:
+    edge Pr_STf goto l7;
+  location l7:
+    edge Pr_D goto l8;
+  location l8:
+    edge Pr_MD goto l9;
+  location l9:
+    edge Pr_B goto l10;
+  location l10:
+    edge Pr_SBf goto l1;
+end
+supervisor automaton Pr2:
+  location l1:
+    initial;
+    edge Pr_UB goto l2;
+  location l2:
+    edge Pr_SBf goto l3;
+  location l3:
+    marked;
+    edge A2_mOn goto l1;
+end
+plant automaton A2:
+  location l1:
+    initial;
+    marked;
+    edge A2_F goto l2;
+  location l2:
+    edge A2_80 goto l3;
+  location l3:
+    edge A2_S80 goto l4;
+  location l4:
+    edge A2_mOn goto l5;
+  location l5:
+    edge A2_B goto l6;
+  location l6:
+    edge A2_57 goto l7;
+  location l7:
+    edge A2_S57 goto l8;
+  location l8:
+    edge A2_mOff goto l9;
+  location l9:
+    edge A2_B goto l10;
+    edge A2_F goto l3;
+  location l10:
+    edge A2_0 goto l11;
+  location l11:
+    edge A2_S0 goto l1;
+end
+supervisor automaton sup:
+  alphabet Pr_UB, Pr_UM, Pr_D, A2_F, A2_mOn, A2_B, A2_mOff;
+  location:
+    initial;
+    marked;
+    edge A2_B when true;
+    edge A2_F when true;
+    edge A2_mOff when true;
+    edge A2_mOn when true;
+    edge Pr_D when true;
+    edge Pr_UB when true;
+    edge Pr_UM when true;
+end

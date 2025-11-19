@@ -1,0 +1,8 @@
+["A1",
+"A1,Ta_H,Ta4",
+"A1,Ro,R1,R4",
+"A1,Ro,Ta_V,Ta2,A1T",
+"Ro,Pr,A2,Pr2,A2P",
+"A1,Ro,Pr,Pr1,A1P",
+"A1,Ro,A2,R2,R3,R5"
+];
